@@ -4,7 +4,7 @@ use crate::{
     schema::times::dsl::*,
     utils::{current_id, current_project, current_time, day_bounds, expand_time_format},
 };
-use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
+use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
 use diesel::prelude::*;
 use libremexre::{err, errors::Result};
 use std::collections::BTreeMap;
@@ -58,6 +58,12 @@ pub fn list(
     }
     if let Some(day) = day {
         let range = day_bounds(day);
+        query = query
+            .filter(start.ge(range.start.naive_utc()))
+            .filter(start.lt(range.end.naive_utc()));
+    }
+    if today {
+        let range = day_bounds(Local::now().date().naive_local());
         query = query
             .filter(start.ge(range.start.naive_utc()))
             .filter(start.lt(range.end.naive_utc()));

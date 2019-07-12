@@ -26,7 +26,7 @@ Total: 0.15h
 Installation
 ------------
 
-Grab a binary from [Releases](https://github.com/remexre/tmst/releases) or install one from crates.io with `cargo install tmst`.
+Grab an amd64 Linux binary from [Releases](https://github.com/remexre/tmst/releases) or build from source using `cargo install tmst`.
 
 License
 -------

@@ -14,7 +14,7 @@ before_deploy:
 deploy:
 - provider: releases
   api_key: $GITHUB_TOKEN
-  file: dist/tmst.tgz
+  file: target/x86_64-unknown-linux-musl/release/tmst
   on:
     tags: true
   skip_cleanup: true

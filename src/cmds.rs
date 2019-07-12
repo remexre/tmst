@@ -104,7 +104,7 @@ pub fn list(
 }
 
 pub fn list_projects(conn: &SqliteConnection) -> Result<Vec<String>> {
-    let projects = times.select(project).load::<String>(conn)?;
+    let projects = times.select(project).distinct().load::<String>(conn)?;
     Ok(projects)
 }
 

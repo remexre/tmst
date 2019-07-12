@@ -59,14 +59,14 @@ fn run(opts: Options) -> Result<()> {
                     for _ in 0..max_project_len - project.len() {
                         print!(" ");
                     }
-                    println!("{} - {}h", project, time);
+                    println!("{} - {:.02}hr", project, time);
                     total += time;
                 }
 
                 println!();
             }
 
-            println!("Total: {}h", total);
+            println!("Total: {:.02}hr", total);
         }),
         Subcommand::ListProjects => cmds::list_projects(&conn).map(|projects| {
             for project in projects {

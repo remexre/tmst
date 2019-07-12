@@ -5,6 +5,11 @@ tmst
 
 Simple timesheet software.
 
+Installation
+------------
+
+Grab an amd64 Linux binary from [Releases](https://github.com/remexre/tmst/releases) or build from source using `cargo install tmst`.
+
 Usage
 -----
 
@@ -23,10 +28,31 @@ foo - 0.15h
 Total: 0.15h
 ```
 
-Installation
-------------
+GUI Usage
+---------
 
-Grab an amd64 Linux binary from [Releases](https://github.com/remexre/tmst/releases) or build from source using `cargo install tmst`.
+Some scripts to integrate with my i3 setup are included.
+
+Copy or symlink the scripts in [`scripts`](https://github.com/remexre/tmst/tree/master/scripts) to somewhere in your PATH.
+
+Depends on [rofi](https://github.com/davatorium/rofi) and [libnotify](https://github.com/GNOME/libnotify) (for notify-send). Rofi can be replaced by [dmenu](https://tools.suckless.org/dmenu/), see inside `tmst-gui.sh` for details.
+
+Add the following to your i3 config:
+
+```
+bindsym $mod+t exec --no-startup-id tmst-gui.sh
+```
+
+Add the following to your i3blocks config:
+
+```
+[tmst]
+command=~/.local/bin/tmst-i3block.sh
+interval=10
+signal=10
+```
+
+`$mod+t` clocks into/out of a project, and while clocked in, the project and the current time will be shown in the i3 bar.
 
 License
 -------

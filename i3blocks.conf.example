@@ -1,0 +1,4 @@
+[tmst]
+command=~/.local/bin/tmst-i3block.sh
+interval=10
+signal=10

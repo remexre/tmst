@@ -34,7 +34,7 @@ pub fn expand_time_format(string: &mut String, time: &Time) {
 
     let elapsed = Utc::now() - DateTime::from_utc(time.start, Utc);
     let hrs = (elapsed.num_hours() as f32) + (elapsed.num_minutes() as f32 / 60.);
-    let hrs_str = hrs.to_string();
+    let hrs_str = format!("{:.02}", hrs);
 
     while let Some(i) = string.rfind("%h") {
         string.replace_range(i..i + 2, &hrs_str);

@@ -6,7 +6,7 @@ services:
 
 before_install: docker build -t remexre/tmst-builder .travis
 
-script: docker run -v "$PWD:/code" --rm remexre/tmst-builder just ci-tests
+script: docker run -v "$PWD:/code" --rm remexre/tmst-builder cargo test
 
 before_deploy:
 - docker run -v "$PWD:/code" --rm remexre/tmst-builder cargo build --release

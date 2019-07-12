@@ -1,0 +1,9 @@
+.*
+*~
+!.gitignore
+!.travis/
+!.travis.yml
+
+/target/
+
+*.db

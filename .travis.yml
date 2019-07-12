@@ -1,0 +1,20 @@
+language: minimal
+os: linux
+cache: cargo
+services:
+- docker
+
+before_install: docker build -t remexre/tmst-builder .travis
+
+script: docker run -v "$PWD:/code" --rm remexre/tmst-builder just ci-tests
+
+before_deploy:
+- docker run -v "$PWD:/code" --rm remexre/tmst-builder cargo build --release
+- docker run -v "$PWD:/code" --rm remexre/tmst-builder chown -R $(id -u):$(id -g) .
+deploy:
+- provider: releases
+  api_key: $GITHUB_TOKEN
+  file: dist/tmst.tgz
+  on:
+    tags: true
+  skip_cleanup: true

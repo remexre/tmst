@@ -6,8 +6,9 @@ homepage = "https://github.com/remexre/tmst"
 keywords = ["timesheet"]
 license = "Apache-2.0/MIT"
 name = "tmst"
+readme = "README.md"
 repository = "https://github.com/remexre/tmst"
-version = "0.1.0-pre"
+version = "0.1.0"
 
 [dependencies]
 chrono = "0.4.7"

@@ -8,9 +8,7 @@ before_install: docker pull clux/muslrust
 
 script: docker run -v $PWD:/volume --rm -t clux/muslrust cargo test
 
-before_deploy:
-- docker run -v $PWD:/volume --rm -t clux/muslrust cargo build --release
-- docker run -v "$PWD:/code" --rm remexre/tmst-builder chown -R $(id -u):$(id -g) .
+before_deploy: docker run -v $PWD:/volume --rm -t clux/muslrust cargo build --release
 deploy:
 - provider: releases
   api_key: $GITHUB_TOKEN

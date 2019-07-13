@@ -73,7 +73,12 @@ pub fn list(
         .distinct()
         .load::<NaiveDateTime>(conn)?
         .into_iter()
-        .map(|time| DateTime::<Utc>::from_utc(time, Utc).naive_local().date())
+        .map(|time| {
+            DateTime::<Utc>::from_utc(time, Utc)
+                .with_timezone(&Local)
+                .naive_local()
+                .date()
+        })
         .collect::<Vec<_>>();
     dates.sort();
     dates.dedup();

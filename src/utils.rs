@@ -1,5 +1,5 @@
 use crate::{models::Time, schema::times::dsl::*};
-use chrono::{offset::TimeZone, DateTime, Datelike, NaiveDate, Utc};
+use chrono::{offset::TimeZone, DateTime, Datelike, Local, NaiveDate, Utc};
 use diesel::prelude::*;
 use std::ops::Range;
 
@@ -20,9 +20,10 @@ pub fn day_bounds(date: NaiveDate) -> Range<DateTime<Utc>> {
     let start_ndt = date.and_hms(0, 0, 0);
     let end_ndt = end_date.and_hms(0, 0, 0);
 
-    let start_dt = Utc.from_local_datetime(&start_ndt).unwrap();
-    let end_dt = Utc.from_local_datetime(&end_ndt).unwrap();
-    start_dt..end_dt
+    let start_dt = Local.from_local_datetime(&start_ndt).unwrap();
+    let end_dt = Local.from_local_datetime(&end_ndt).unwrap();
+
+    start_dt.with_timezone(&Utc)..end_dt.with_timezone(&Utc)
 }
 
 pub fn expand_time_format(string: &mut String, time: &Time) {

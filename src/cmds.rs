@@ -87,7 +87,8 @@ pub fn list(
         .into_iter()
         .map(|date| {
             let range = day_bounds(date);
-            let projects = times
+            let mut out = BTreeMap::new();
+            times
                 .filter(start.ge(range.start.naive_utc()))
                 .filter(start.lt(range.end.naive_utc()))
                 .filter(end.is_not_null())
@@ -102,8 +103,10 @@ pub fn list(
                         (time.project, hrs)
                     })
                 })
-                .collect();
-            Ok((date, projects))
+                .for_each(|(prj, hrs)| {
+                    *out.entry(prj).or_insert_with(f32::default) += hrs;
+                });
+            Ok((date, out))
         })
         .collect()
 }

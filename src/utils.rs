@@ -1,5 +1,5 @@
 use crate::{models::Time, schema::times::dsl::*};
-use chrono::{offset::TimeZone, DateTime, Datelike, Local, NaiveDate, Utc};
+use chrono::{offset::TimeZone, DateTime, Datelike, Local, NaiveDate, NaiveDateTime, Utc};
 use diesel::prelude::*;
 use std::ops::Range;
 
@@ -26,6 +26,17 @@ pub fn day_bounds(date: NaiveDate) -> Range<DateTime<Utc>> {
     start_dt.with_timezone(&Utc)..end_dt.with_timezone(&Utc)
 }
 
+pub fn from_timestamp<Tz: TimeZone>(ts: i64, tz: Tz::Offset) -> DateTime<Tz> {
+    DateTime::from_utc(NaiveDateTime::from_timestamp(ts, 0), tz)
+}
+
+#[test]
+fn from_timestamp_correct() {
+    use chrono::offset::FixedOffset;
+    let dt = from_timestamp::<FixedOffset>(0, FixedOffset::west(6 * 60 * 60));
+    assert_eq!(dt.to_string(), "1969-12-31 18:00:00 -06:00");
+}
+
 pub fn expand_time_format(string: &mut String, time: &Time) {
     assert!(time.end.is_none());
 
@@ -33,7 +44,7 @@ pub fn expand_time_format(string: &mut String, time: &Time) {
         string.replace_range(i..i + 2, &time.project);
     }
 
-    let elapsed = Utc::now() - DateTime::from_utc(time.start, Utc);
+    let elapsed = Utc::now() - from_timestamp(time.start, Utc);
     let hrs = (elapsed.num_hours() as f32) + (elapsed.num_minutes() as f32 / 60.);
     let hrs_str = format!("{:.02}", hrs);
 

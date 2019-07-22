@@ -8,11 +8,11 @@ license = "Apache-2.0/MIT"
 name = "tmst"
 readme = "README.md"
 repository = "https://github.com/remexre/tmst"
-version = "0.1.4"
+version = "0.2.0"
 
 [dependencies]
 chrono = "0.4.7"
-diesel = { version = "1.4.2", features = ["chrono", "sqlite"], default-features = false }
+diesel = { version = "1.4.2", features = ["sqlite"], default-features = false }
 diesel_migrations = "1.4.0"
 dirs = "2.0.1"
 libremexre = { features = ["log", "pretty_env_logger"], version = "0.1.12" }

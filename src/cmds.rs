@@ -2,9 +2,11 @@ use crate::{
     models::{NewTime, Time},
     schema,
     schema::times::dsl::*,
-    utils::{current_id, current_project, current_time, day_bounds, expand_time_format},
+    utils::{
+        current_id, current_project, current_time, day_bounds, expand_time_format, from_timestamp,
+    },
 };
-use chrono::{DateTime, Local, NaiveDate, NaiveDateTime, Utc};
+use chrono::{Local, NaiveDate, Utc};
 use diesel::prelude::*;
 use libremexre::{err, errors::Result};
 use std::collections::BTreeMap;
@@ -30,7 +32,7 @@ pub fn r#in(conn: &SqliteConnection, prj: String) -> Result<()> {
 
     let new_time = NewTime {
         project: &prj,
-        start: Utc::now().naive_utc(),
+        start: Utc::now().timestamp(),
     };
 
     diesel::insert_into(schema::times::table)
@@ -50,35 +52,30 @@ pub fn list(
     let mut query = times.select(start).into_boxed();
     if let Some(after) = after {
         let range = day_bounds(after);
-        query = query.filter(start.ge(range.start.naive_utc()));
+        query = query.filter(start.ge(range.start.timestamp()));
     }
     if let Some(before) = before {
         let range = day_bounds(before);
-        query = query.filter(start.lt(range.end.naive_utc()));
+        query = query.filter(start.lt(range.end.timestamp()));
     }
     if let Some(day) = day {
         let range = day_bounds(day);
         query = query
-            .filter(start.ge(range.start.naive_utc()))
-            .filter(start.lt(range.end.naive_utc()));
+            .filter(start.ge(range.start.timestamp()))
+            .filter(start.lt(range.end.timestamp()));
     }
     if today {
         let range = day_bounds(Local::now().date().naive_local());
         query = query
-            .filter(start.ge(range.start.naive_utc()))
-            .filter(start.lt(range.end.naive_utc()));
+            .filter(start.ge(range.start.timestamp()))
+            .filter(start.lt(range.end.timestamp()));
     }
 
     let mut dates = query
         .distinct()
-        .load::<NaiveDateTime>(conn)?
+        .load::<i64>(conn)?
         .into_iter()
-        .map(|time| {
-            DateTime::<Utc>::from_utc(time, Utc)
-                .with_timezone(&Local)
-                .naive_local()
-                .date()
-        })
+        .map(|time| from_timestamp::<Utc>(time, Utc).naive_local().date())
         .collect::<Vec<_>>();
     dates.sort();
     dates.dedup();
@@ -89,15 +86,15 @@ pub fn list(
             let range = day_bounds(date);
             let mut out = BTreeMap::new();
             times
-                .filter(start.ge(range.start.naive_utc()))
-                .filter(start.lt(range.end.naive_utc()))
+                .filter(start.ge(range.start.timestamp()))
+                .filter(start.lt(range.end.timestamp()))
                 .filter(end.is_not_null())
                 .load(conn)?
                 .into_iter()
                 .filter_map(|time: Time| {
                     time.end.map(|e| {
-                        let elapsed = DateTime::<Utc>::from_utc(e, Utc)
-                            - DateTime::<Utc>::from_utc(time.start, Utc);
+                        let elapsed =
+                            from_timestamp::<Utc>(e, Utc) - from_timestamp(time.start, Utc);
                         let hrs =
                             (elapsed.num_hours() as f32) + (elapsed.num_minutes() as f32 / 60.);
                         (time.project, hrs)
@@ -119,7 +116,7 @@ pub fn list_projects(conn: &SqliteConnection) -> Result<Vec<String>> {
 pub fn out(conn: &SqliteConnection) -> Result<()> {
     let curid = current_id(conn)?.ok_or("Not clocked in to any project!")?;
     diesel::update(times.filter(id.eq(curid)))
-        .set(end.eq(Utc::now().naive_utc()))
+        .set(end.eq(Utc::now().timestamp()))
         .execute(conn)?;
     Ok(())
 }

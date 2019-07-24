@@ -95,8 +95,7 @@ pub fn list(
                     time.end.map(|e| {
                         let elapsed =
                             from_timestamp::<Utc>(e, Utc) - from_timestamp(time.start, Utc);
-                        let hrs =
-                            (elapsed.num_hours() as f32) + (elapsed.num_minutes() as f32 / 60.);
+                        let hrs = (elapsed.num_minutes() as f32) / 60.;
                         (time.project, hrs)
                     })
                 })
